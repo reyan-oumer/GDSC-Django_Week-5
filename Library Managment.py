@@ -49,11 +49,38 @@ class Library:
         new_user = User(id_no, name)
         self.users.append(new_user)
         print(f"User '{name}' registered with ID number: {id_no}.")
-    def handle_borrow_transaction(user_name, id_no, book_title, return_date):
-        print("Working on it")
+    def handle_borrow_transaction(self,user_name, id_no, book_title, return_date):
+        #print("Working on it")
+        user = next((user for user in self.users if user.name == user_name and user.id_no == id_no), None)
+        if user:
+            book = next((book for book in self.books if book.title == book_title), None)
+            if book:
+                user.borrow_book(book)
+                print(f"{user_name} has borrowed '{book_title}' and is due to return it on {return_date}.")
+            else:
+                print(f"Book '{book_title}' is not available in the library.")
+        else:
+            print(f"User '{user_name}' with user ID {id_no} is not registered.")
+            print("Please Register first")
     
     def handle_return_transaction(user_name, id_no):
-        print("Working on it")
+        #print("Working on it")
+        user = next((user for user in self.users if user.name == user_name and user.id_no == id_no), None)
+        if user:
+            if user.books_borrowed:
+                print(f"Books currently borrowed by {user_name}: {', '.join([book.title for book in user.books_borrowed])}")
+                returned_book_title = input("Enter the title of the book you are returning: ")
+                returned_book = next((book for book in user.books_borrowed if book.title == returned_book_title), None)
+                if returned_book:
+                    user.return_book(returned_book)
+                    print(f"Book '{returned_book_title}' returned successfully by {user_name}.")
+                else:
+                    print(f"You have not borrowed the book '{returned_book_title}'.")
+            else:
+                print(f"{user_name} currently has no books borrowed.")
+        else:
+            print(f"User '{user_name}' with user ID {id_no} is not registered.")
+
     def view_book_details(self, book_title):
         book = next((book for book in self.books if book.title == book_title), None)
         if book:
